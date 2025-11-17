@@ -34,7 +34,7 @@ function sendMsg() {
         if (loadingElem) loadingElem.remove();
 
         if (j.needs_human) {
-            append("bot", "Please wait, a human will join the conversation.");
+            append("bot", "AI a oprit. Un colegva prelua conversa■ia.");
         } else {
             append("bot", j.reply);
         }
