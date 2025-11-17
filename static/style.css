@@ -1,0 +1,147 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background: #eef1f5;
+    margin: 0;
+}
+.loading {
+    opacity: 0.6;
+    font-style: italic;
+}
+
+
+/* Allow full width for pages like history.html */
+.container_history {
+    width: 100%;
+    max-width: 1200px;   /* give room */
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 28px;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.container {
+    width: 400px;
+    margin: auto;
+    margin-top: 60px;
+    background: #ffffff;
+    padding: 28px;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.center {
+    text-align: center;
+}
+
+h2 {
+    margin-top: 0;
+}
+
+.subtitle {
+    color: #555;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.menu-buttons button {
+    width: 100%;
+    display: block;
+    padding: 12px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    background: #4c8bf5;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.menu-buttons button:hover {
+    background: #3b70d9;
+}
+
+.logout {
+    background: #d9534f !important;
+}
+
+.logout:hover {
+    background: #c03f3b !important;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+    font-size: 15px;
+}
+
+button {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #4c8bf5;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #3b70d9;
+}
+
+.chatbox {
+    width: 420px;
+    margin: auto;
+    margin-top: 40px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+#messages {
+    height: 330px;
+    overflow-y: auto;
+    padding: 10px;
+    background: #f7f9fc;
+    border-radius: 6px;
+}
+
+.user {
+    text-align: right;
+    margin: 8px 0;
+    padding: 8px 12px;
+    background: #e4edff;
+    border-radius: 12px;
+}
+
+.bot {
+    text-align: left;
+    margin: 8px 0;
+    padding: 8px 12px;
+    background: #def7e3;
+    border-radius: 12px;
+}
+
+.input-row {
+    display: flex;
+    margin-top: 10px;
+}
+
+.input-row input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.input-row button {
+    width: 120px;
+    margin-left: 10px;
+}

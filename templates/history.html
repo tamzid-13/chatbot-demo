@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Conversation History</title>
+    <link rel="stylesheet" href="/static/style.css">
+
+    <style>
+    /* Layout */
+    .history-wrapper {
+        display: flex;
+        gap: 20px;
+        height: 80vh;
+    }
+
+    /* Sidebar */
+    .conv-sidebar {
+        width: 320px;
+        background: #fff;
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        overflow-y: auto;
+    }
+
+    .conv-title {
+        font-weight: 600;
+        font-size: 17px;
+        margin-bottom: 12px;
+    }
+
+    .conv-item {
+        padding: 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-bottom: 8px;
+        border: 1px solid transparent;
+        background: #f8f9fc;
+        transition: 0.15s;
+    }
+
+    .conv-item:hover {
+        background: #eef3ff;
+        border-color: #d9e3ff;
+    }
+
+    .conv-item.selected {
+        background: #e0ebff;
+        border-color: #a8c4ff;
+    }
+
+    .conv-id {
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .conv-meta {
+        font-size: 12px;
+        color: #666;
+        margin-top: 3px;
+    }
+
+    /* Messages panel */
+    .messages-panel {
+        flex: 1;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        padding: 16px;
+        overflow-y: auto;
+    }
+
+    .msg-bubble {
+        margin-bottom: 14px;
+        padding: 12px;
+        border-radius: 10px;
+        line-height: 1.4;
+    }
+
+    .msg-user {
+        background: #e8f0ff;
+        text-align: right;
+    }
+
+    .msg-bot {
+        background: #def7e3;
+        text-align: left;
+    }
+
+    .msg-meta {
+        font-size: 11px;
+        color: #777;
+        margin-bottom: 4px;
+    }
+
+    .msg-empty {
+        padding: 30px;
+        text-align: center;
+        color: #777;
+    }
+
+    .top-load-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 16px;
+        align-items: center;
+    }
+
+    .top-load-row input {
+        flex: 1;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+    }
+    </style>
+</head>
+<body>
+
+<div class="container_history" style="max-width: 1024px;">
+    <h2 style="margin-bottom: 20px;">Conversation History</h2>
+
+    <div class="history-wrapper">
+
+        <!-- LEFT SIDEBAR -->
+        <div class="conv-sidebar">
+            <div class="conv-title">Conversations</div>
+            <div id="conversationsPlaceholder">Loading...</div>
+        </div>
+
+        <!-- MESSAGES PANEL -->
+        <div class="messages-panel">
+
+            <div class="top-load-row">
+                <input id="convId" placeholder="Conversation ID...">
+                <button onclick="loadHistory()">Load</button>
+            </div>
+
+            <div id="history"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+async function loadConversations() {
+    const placeholder = document.getElementById("conversationsPlaceholder");
+    placeholder.textContent = "Loading...";
+
+    try {
+        const res = await fetch('/conversations');
+        if (!res.ok) {
+            placeholder.textContent = "Failed to load.";
+            return;
+        }
+
+        const data = await res.json();
+        const sidebar = document.querySelector(".conv-sidebar");
+
+        // Clear and re-add title
+        sidebar.innerHTML =
+            `<div class="conv-title">Conversations</div>`;
+
+        if (!data.conversations.length) {
+            sidebar.innerHTML += `<div class="msg-empty">No conversations found.</div>`;
+            return;
+        }
+
+        data.conversations.forEach(c => {
+            const item = document.createElement("div");
+            item.className = "conv-item";
+            item.dataset.conv = c.conversation_id;
+
+            item.innerHTML = `
+                <div class="conv-id">${c.conversation_id}</div>
+                <div class="conv-meta">${c.message_count} messages • 
+                    ${c.last_ts ? new Date(c.last_ts * 1000).toLocaleString() : ""}
+                </div>
+            `;
+
+            item.addEventListener("click", () => {
+                document.querySelectorAll(".conv-item")
+                    .forEach(x => x.classList.remove("selected"));
+
+                item.classList.add("selected");
+
+                document.getElementById("convId").value = c.conversation_id;
+                loadHistory(c.conversation_id);
+            });
+
+            sidebar.appendChild(item);
+        });
+
+    } catch (err) {
+        placeholder.textContent = "Error loading conversations";
+        console.error(err);
+    }
+}
+
+async function loadHistory(providedId) {
+    const convId = providedId || document.getElementById("convId").value.trim();
+    const historyDiv = document.getElementById("history");
+    historyDiv.innerHTML = "Loading...";
+
+    if (!convId) {
+        historyDiv.innerHTML = `<div class="msg-empty">Enter or select a conversation ID.</div>`;
+        return;
+    }
+
+    try {
+        const res = await fetch(`/conversation/${encodeURIComponent(convId)}`);
+        if (!res.ok) {
+            historyDiv.innerHTML = `<div class="msg-empty">Conversation not found.</div>`;
+            return;
+        }
+
+        const j = await res.json();
+        historyDiv.innerHTML = "";
+
+        if (!j.messages.length) {
+            historyDiv.innerHTML = `<div class="msg-empty">No messages.</div>`;
+            return;
+        }
+
+        j.messages.forEach(m => {
+            const div = document.createElement("div");
+            div.className = `msg-bubble ${m.role === "user" ? "msg-user" : "msg-bot"}`;
+            div.innerHTML = `
+                <div class="msg-meta">${m.role} • ${new Date(m.ts * 1000).toLocaleString()}</div>
+                ${escapeHtml(m.text)}
+            `;
+            historyDiv.appendChild(div);
+        });
+
+    } catch (err) {
+        historyDiv.innerHTML = `<div class="msg-empty">Error loading.</div>`;
+        console.error(err);
+    }
+}
+
+function escapeHtml(t) {
+    if (!t) return "";
+    return t.replace(/[&<"'>]/g, m => (
+        { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" }[m]
+    ));
+}
+
+window.onload = loadConversations;
+</script>
+
+</body>
+</html>

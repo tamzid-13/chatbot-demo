@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="container center">
+    <h2>Admin Login</h2>
+    <p class="subtitle">Sign in to manage your AI system</p>
+
+    <input id="username" placeholder="Username" value="admin">
+    <input id="password" type="password" placeholder="Password">
+
+    <button onclick="login()">Login</button>
+
+    <p id="msg" style="color:red; margin-top:10px;"></p>
+</div>
+
+<script>
+function login() {
+    fetch("/admin/login", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+            username: username.value,
+            password: password.value
+        })
+    })
+    .then(r => r.json())
+    .then(j => {
+        if (j.token) {
+            localStorage.setItem("admin_token", j.token);
+            location.href = "/dashboard";
+        } else {
+            msg.textContent = j.detail || "Login failed";
+        }
+    });
+}
+</script>
+
+</body>
+</html>

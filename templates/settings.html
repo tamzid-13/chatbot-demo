@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Settings</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="container">
+    <h2>AI Assistant Settings</h2>
+
+    <label>Welcome Message</label>
+    <textarea id="welcome"></textarea>
+
+    <label>Fallback Message</label>
+    <textarea id="fallback"></textarea>
+
+    <label>Tone Instructions</label>
+    <textarea id="tone"></textarea>
+
+    <button onclick="saveSettings()">Save Settings</button>
+    <button class="logout" onclick="logout()">Logout</button>
+
+    <p id="status"></p>
+</div>
+
+<script>
+function loadSettings() {
+    fetch("/admin/settings", {
+        headers: {Authorization: "Bearer " + localStorage.getItem("admin_token")}
+    })
+    .then(r => r.json())
+    .then(j => {
+        welcome.value = j.welcome;
+        fallback.value = j.fallback;
+        tone.value = j.tone;
+    });
+}
+
+function saveSettings() {
+    fetch("/admin/settings", {
+        method: "POST",
+        headers: {
+            "Content-Type":"application/json",
+            Authorization: "Bearer " + localStorage.getItem("admin_token")
+        },
+        body: JSON.stringify({
+            welcome: welcome.value,
+            fallback: fallback.value,
+            tone: tone.value
+        })
+    })
+    .then(r => r.json())
+    .then(j => {
+        status.textContent = "Saved!";
+    });
+}
+
+function logout() {
+    localStorage.removeItem("admin_token");
+    location.href = "/login";
+}
+
+loadSettings();
+</script>
+
+</body>
+</html>

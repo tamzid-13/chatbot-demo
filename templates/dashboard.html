@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="container center">
+    <h2>Admin Dashboard</h2>
+    <p class="subtitle">Select a section to manage your AI assistant</p>
+
+    <div class="menu-buttons">
+        <button onclick="location.href='/settings'">⚙ Settings</button>
+        <button onclick="location.href='/chat'">💬 Live Chat</button>
+        <button onclick="location.href='/history'">📜 Chat History</button>
+        <button class="logout" onclick="logout()">🚪 Logout</button>
+    </div>
+</div>
+
+<script>
+function logout() {
+    localStorage.removeItem("admin_token");
+    location.href = "/login";
+}
+</script>
+
+</body>
+</html>
