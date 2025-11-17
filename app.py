@@ -18,6 +18,9 @@ from datetime import datetime
 from dotenv import load_dotenv
 import os
 
+from fastapi.responses import RedirectResponse
+from fastapi import Request
+
 # Load environment variables from .env file
 load_dotenv()
 # Google GenAI SDK
@@ -477,12 +480,18 @@ async def health():
     return {"ok": True}
 
 @app.get("/")
-def read_root():
-    return {"message": "Hello World!"}
+def read_root(request: Request):
+    token = request.cookies.get("session_token")
+
+    if token and get_session(token):
+        return RedirectResponse(url="/dashboard")
+    
+    return RedirectResponse(url="/login")
+
 
 # run locally for dev
 if __name__ == "__main__":
     import uvicorn
     print("Starting server (Google GenAI backend) on :8000; GENAI_CHAT_MODEL:", GENAI_CHAT_MODEL, " EMBED_MODEL:", GENAI_EMBED_MODEL)
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=8089, reload=True)
     
