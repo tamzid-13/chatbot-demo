@@ -107,5 +107,3 @@ No license file is included in this repository. Add a `LICENSE` file if you wish
 
 - Edit `app.py` to change prompts, fallback behavior, or the chunking logic.
 - Look at `db_schema.py` to extend user/session storage.
-
-Happy hacking — if you want, I can also add a small `README` snippet showing how to deploy to a cloud provider or a Dockerfile for containerized runs.
